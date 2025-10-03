@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromRGBO(133, 108, 60, 1),
         child: const Icon(Icons.add),
       ),
     );
@@ -391,7 +391,7 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(filterTitle),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromRGBO(133, 108, 60, 1),
         foregroundColor: Colors.white,
       ),
       body: Column(
@@ -463,7 +463,7 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.grey[200],
+          color: isSelected ? Color.fromRGBO(133, 108, 60, 1) : Colors.grey[200],
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -491,7 +491,7 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
         statusIcon = Icons.check_circle;
         break;
       case 'pending':
-        statusColor = Colors.blue;
+        statusColor = Color.fromRGBO(133, 108, 60, 1);
         statusIcon = Icons.schedule;
         break;
       default:
@@ -593,7 +593,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromRGBO(133, 108, 60, 1),
         foregroundColor: Colors.white,
       ),
       body: Center(
