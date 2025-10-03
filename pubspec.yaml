@@ -44,6 +44,8 @@ dependencies:
 
   delivery_repository:
     path: packages/delivery_repository
+  profile_repository:
+    path: packages/profile_repository
 
   http: ^1.5.0
   flutter_bloc: ^9.0.0
@@ -59,6 +61,8 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.4
   flutter_test:
     sdk: flutter
 

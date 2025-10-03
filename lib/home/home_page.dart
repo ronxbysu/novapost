@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:novapost/delivery/delivery_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novapost/parcels/create_parcel_page.dart';
+import 'package:novapost/parcels/bloc/parcels_bloc.dart';
+import 'package:novapost/profile/bloc/profile_bloc.dart';
+import 'package:delivery_repository/delivery_repository.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => ParcelsBloc(
+        context.read<ParcelRepository>(),
+      )..add(LoadParcels()),
+      child: const HomePageView(),
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  // Mock data
-  final String userName = "John Doe";
-  final String userAvatar = "https://i.pravatar.cc/150?img=12";
-  final int totalParcels = 24;
+class HomePageView extends StatelessWidget {
+  const HomePageView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +44,12 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const CreateDeliveryPage(),
+                  builder: (context) => const CreateParcelPage(),
                 ),
-              );
+              ).then((_) {
+                // Refresh parcels after creating new delivery
+                context.read<ParcelsBloc>().add(RefreshParcels());
+              });
             },
           ),
           IconButton(
@@ -47,182 +58,245 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          // Instagram-style profile header
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                // Avatar with ring
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Colors.purple, Colors.orange, Colors.pink],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: CircleAvatar(
-                        radius: 35,
-                        backgroundImage: NetworkImage(userAvatar),
-                        backgroundColor: Colors.grey[300],
-                      ),
-                    ),
+      body: BlocBuilder<ParcelsBloc, ParcelsState>(
+        builder: (context, state) {
+          if (state is ParcelsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ParcelsError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error: ${state.message}',
+                    style: const TextStyle(color: Colors.red),
                   ),
-                ),
-                const SizedBox(width: 20),
-                // Stats
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatColumn(
-                        context,
-                        'Total',
-                        totalParcels.toString(),
-                        ParcelFilter.all,
-                      ),
-                      _buildStatColumn(
-                        context,
-                        'Active',
-                        '8',
-                        ParcelFilter.active,
-                      ),
-                      _buildStatColumn(
-                        context,
-                        'Delivered',
-                        '16',
-                        ParcelFilter.delivered,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // User info
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  userName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Delivery Manager',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Action buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
+                  const SizedBox(height: 16),
+                  ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfilePage(),
-                        ),
-                      );
+                      context.read<ParcelsBloc>().add(LoadParcels());
                     },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      side: const BorderSide(color: Colors.grey),
-                    ),
-                    child: const Text(
-                      'Edit Profile',
-                      style: TextStyle(color: Colors.black),
-                    ),
+                    child: const Text('Retry'),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      side: const BorderSide(color: Colors.grey),
-                    ),
-                    child: const Text(
-                      'Share Profile',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Divider(height: 1),
-          // Recent parcels section
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Recent Deliveries',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-          ),
-          // Grid of recent parcels
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2,
-            ),
-            itemCount: 9,
-            itemBuilder: (context, index) {
-              return _buildParcelGridItem(index);
-            },
-          ),
-        ],
+            );
+          }
+
+          if (state is ParcelsLoaded) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<ParcelsBloc>().add(RefreshParcels());
+                // Wait for the state to change
+                await Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: ListView(
+                children: [
+                  // Instagram-style profile header
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        // Avatar with ring
+                        BlocBuilder<ProfileBloc, ProfileState>(
+                          builder: (context, profileState) {
+                            final avatarUrl = profileState is ProfileLoaded
+                                ? profileState.profile.avatarUrl
+                                : "https://i.pravatar.cc/150?img=12";
+
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ProfilePage(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: [Colors.purple, Colors.orange, Colors.pink],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 35,
+                                    backgroundImage: NetworkImage(avatarUrl),
+                                    backgroundColor: Colors.grey[300],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 20),
+                        // Stats
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatColumn(
+                                context,
+                                'Total',
+                                state.totalCount.toString(),
+                                'all',
+                              ),
+                              _buildStatColumn(
+                                context,
+                                'Active',
+                                state.activeCount.toString(),
+                                'active',
+                              ),
+                              _buildStatColumn(
+                                context,
+                                'Delivered',
+                                state.deliveredCount.toString(),
+                                'delivered',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // User info
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: BlocBuilder<ProfileBloc, ProfileState>(
+                      builder: (context, profileState) {
+                        final name = profileState is ProfileLoaded
+                            ? profileState.profile.name
+                            : 'John Doe';
+                        final role = profileState is ProfileLoaded
+                            ? profileState.profile.role
+                            : 'Delivery Manager';
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              role,
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Action buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfilePage(),
+                                ),
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
+                            child: const Text(
+                              'Edit Profile',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {},
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
+                            child: const Text(
+                              'Share Profile',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(height: 1),
+                  // Recent parcels section
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Recent Deliveries',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  // Grid of recent parcels
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 2,
+                      mainAxisSpacing: 2,
+                    ),
+                    itemCount: state.parcels.length > 9 ? 9 : state.parcels.length,
+                    itemBuilder: (context, index) {
+                      return _buildParcelGridItem(state.parcels[index]);
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return const Center(child: Text('No data'));
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CreateDeliveryPage(),
+              builder: (context) => const CreateParcelPage(),
             ),
-          );
+          ).then((_) {
+            context.read<ParcelsBloc>().add(RefreshParcels());
+          });
         },
         backgroundColor: Color.fromRGBO(133, 108, 60, 1),
         child: const Icon(Icons.add),
@@ -234,14 +308,17 @@ class _HomePageState extends State<HomePage> {
       BuildContext context,
       String label,
       String count,
-      ParcelFilter filter,
+      String filter,
       ) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ParcelsListPage(filter: filter),
+            builder: (context) => BlocProvider.value(
+              value: context.read<ParcelsBloc>(),
+              child: ParcelsListPage(filter: filter),
+            ),
           ),
         );
       },
@@ -267,7 +344,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildParcelGridItem(int index) {
+  Widget _buildParcelGridItem(Parcel parcel) {
     final colors = [
       Colors.blue[100],
       Colors.green[100],
@@ -277,9 +354,11 @@ class _HomePageState extends State<HomePage> {
       Colors.teal[100],
     ];
 
+    final colorIndex = parcel.parcelId.hashCode % colors.length;
+
     return Container(
       decoration: BoxDecoration(
-        color: colors[index % colors.length],
+        color: colors[colorIndex],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -287,15 +366,16 @@ class _HomePageState extends State<HomePage> {
           Icon(
             Icons.inventory_2,
             size: 40,
-            color: colors[index % colors.length]!.withOpacity(0.5),
+            color: colors[colorIndex]!.withOpacity(0.5),
           ),
           const SizedBox(height: 8),
           Text(
-            '#PKG${1000 + index}',
+            '#${parcel.parcelId}',
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -303,162 +383,118 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-enum ParcelFilter { all, active, delivered, pending }
-
-class ParcelsListPage extends StatefulWidget {
-  final ParcelFilter filter;
+class ParcelsListPage extends StatelessWidget {
+  final String filter;
 
   const ParcelsListPage({Key? key, required this.filter}) : super(key: key);
 
   @override
-  State<ParcelsListPage> createState() => _ParcelsListPageState();
-}
-
-class _ParcelsListPageState extends State<ParcelsListPage> {
-  late ParcelFilter selectedFilter;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedFilter = widget.filter;
-  }
-
-  String get filterTitle {
-    switch (selectedFilter) {
-      case ParcelFilter.all:
-        return 'All Parcels';
-      case ParcelFilter.active:
-        return 'Active Parcels';
-      case ParcelFilter.delivered:
-        return 'Delivered Parcels';
-      case ParcelFilter.pending:
-        return 'Pending Parcels';
-    }
-  }
-
-  List<Map<String, dynamic>> get filteredParcels {
-    final allParcels = [
-      {
-        'id': 'PKG1001',
-        'status': 'active',
-        'recipient': 'Alice Johnson',
-        'address': '123 Main St, New York',
-        'date': '2025-10-05',
-      },
-      {
-        'id': 'PKG1002',
-        'status': 'delivered',
-        'recipient': 'Bob Smith',
-        'address': '456 Oak Ave, Boston',
-        'date': '2025-10-03',
-      },
-      {
-        'id': 'PKG1003',
-        'status': 'active',
-        'recipient': 'Carol White',
-        'address': '789 Pine Rd, Chicago',
-        'date': '2025-10-04',
-      },
-      {
-        'id': 'PKG1004',
-        'status': 'pending',
-        'recipient': 'David Brown',
-        'address': '321 Elm St, Seattle',
-        'date': '2025-10-06',
-      },
-      {
-        'id': 'PKG1005',
-        'status': 'delivered',
-        'recipient': 'Eve Davis',
-        'address': '654 Maple Dr, Portland',
-        'date': '2025-10-02',
-      },
-    ];
-
-    if (selectedFilter == ParcelFilter.all) {
-      return allParcels;
-    }
-
-    return allParcels
-        .where((p) => p['status'] == selectedFilter.name)
-        .toList();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final parcels = filteredParcels;
+    // Apply filter when page opens
+    context.read<ParcelsBloc>().add(FilterParcels(filter));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(filterTitle),
+        title: Text(_getFilterTitle(filter)),
         backgroundColor: Color.fromRGBO(133, 108, 60, 1),
         foregroundColor: Colors.white,
       ),
-      body: Column(
-        children: [
-          // Filter chips
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildFilterChip('All', ParcelFilter.all),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Active', ParcelFilter.active),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Delivered', ParcelFilter.delivered),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Pending', ParcelFilter.pending),
-                ],
-              ),
-            ),
-          ),
-          const Divider(height: 1),
-          // Parcels list
-          Expanded(
-            child: parcels.isEmpty
-                ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.inbox_outlined,
-                    size: 80,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No parcels found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
+      body: BlocBuilder<ParcelsBloc, ParcelsState>(
+        builder: (context, state) {
+          if (state is ParcelsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ParcelsError) {
+            return Center(
+              child: Text('Error: ${state.message}'),
+            );
+          }
+
+          if (state is ParcelsLoaded) {
+            return Column(
+              children: [
+                // Filter chips
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildFilterChip(context, 'All', 'all', state.currentFilter),
+                        const SizedBox(width: 8),
+                        _buildFilterChip(context, 'Active', 'active', state.currentFilter),
+                        const SizedBox(width: 8),
+                        _buildFilterChip(context, 'Delivered', 'delivered', state.currentFilter),
+                        const SizedBox(width: 8),
+                        _buildFilterChip(context, 'Pending', 'pending', state.currentFilter),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            )
-                : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: parcels.length,
-              itemBuilder: (context, index) {
-                final parcel = parcels[index];
-                return _buildParcelCard(parcel);
-              },
-            ),
-          ),
-        ],
+                ),
+                const Divider(height: 1),
+                // Parcels list
+                Expanded(
+                  child: state.filteredParcels.isEmpty
+                      ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inbox_outlined,
+                          size: 80,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No parcels found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                      : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: state.filteredParcels.length,
+                    itemBuilder: (context, index) {
+                      final parcel = state.filteredParcels[index];
+                      return _buildParcelCard(parcel);
+                    },
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return const Center(child: Text('No data'));
+        },
       ),
     );
   }
 
-  Widget _buildFilterChip(String label, ParcelFilter filter) {
-    final isSelected = selectedFilter == filter;
+  String _getFilterTitle(String filter) {
+    switch (filter) {
+      case 'all':
+        return 'All Parcels';
+      case 'active':
+        return 'Active Parcels';
+      case 'delivered':
+        return 'Delivered Parcels';
+      case 'pending':
+        return 'Pending Parcels';
+      default:
+        return 'Parcels';
+    }
+  }
+
+  Widget _buildFilterChip(BuildContext context, String label, String filter, String currentFilter) {
+    final isSelected = currentFilter == filter;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedFilter = filter;
-        });
+        context.read<ParcelsBloc>().add(FilterParcels(filter));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -477,11 +513,11 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
     );
   }
 
-  Widget _buildParcelCard(Map<String, dynamic> parcel) {
+  Widget _buildParcelCard(Parcel parcel) {
     Color statusColor;
     IconData statusIcon;
 
-    switch (parcel['status']) {
+    switch (parcel.status) {
       case 'active':
         statusColor = Colors.orange;
         statusIcon = Icons.local_shipping;
@@ -523,14 +559,14 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        parcel['id'],
+                        parcel.parcelId,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        parcel['status'].toString().toUpperCase(),
+                        parcel.status.toUpperCase(),
                         style: TextStyle(
                           fontSize: 12,
                           color: statusColor,
@@ -548,20 +584,9 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
               children: [
                 const Icon(Icons.person_outline, size: 16, color: Colors.grey),
                 const SizedBox(width: 8),
-                Text(
-                  parcel['recipient'],
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    parcel['address'],
+                    parcel.receiverEmail,
                     style: const TextStyle(fontSize: 14),
                   ),
                 ),
@@ -570,11 +595,13 @@ class _ParcelsListPageState extends State<ParcelsListPage> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+                const Icon(Icons.mail_outline, size: 16, color: Colors.grey),
                 const SizedBox(width: 8),
-                Text(
-                  parcel['date'],
-                  style: const TextStyle(fontSize: 14),
+                Expanded(
+                  child: Text(
+                    'From: ${parcel.senderEmail}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
                 ),
               ],
             ),
@@ -600,7 +627,7 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 60,
               backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=12"),
             ),

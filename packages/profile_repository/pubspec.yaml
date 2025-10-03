@@ -1,6 +1,6 @@
-name: delivery_repository
-description: delivery_repository
-version: 1.0.0
+name: profile_repository
+description: profile_repository
+version: 0.0.1
 publish_to: none
 
 environment:
@@ -12,8 +12,6 @@ uuid: &uuid ^4.5.1
 
 dependencies:
   auth_repository: *auth_repository_version
-  parcel_repository:
-    path: ../parcel_repository
 
   uuid: *uuid
   http: ^1.5.0

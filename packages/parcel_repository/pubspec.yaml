@@ -1,5 +1,5 @@
-name: delivery_repository
-description: delivery_repository
+name: parcel_repository
+description: parcel_repository
 version: 1.0.0
 publish_to: none
 
@@ -12,8 +12,6 @@ uuid: &uuid ^4.5.1
 
 dependencies:
   auth_repository: *auth_repository_version
-  parcel_repository:
-    path: ../parcel_repository
 
   uuid: *uuid
   http: ^1.5.0
