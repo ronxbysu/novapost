@@ -44,8 +44,9 @@ dependencies:
 
   delivery_repository:
     path: packages/delivery_repository
-  profile_repository:
-    path: packages/profile_repository
+  account_repository:
+    path: packages/account_repository
+
 
   http: ^1.5.0
   flutter_bloc: ^9.0.0
