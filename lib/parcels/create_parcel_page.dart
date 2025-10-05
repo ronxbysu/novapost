@@ -39,111 +39,6 @@ class _CreateParcelPageState extends State<CreateParcelPage> {
     super.dispose();
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null) {
-      setState(() => _selectedDate = picked);
-    }
-  }
-
-  Future<void> _selectTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() => _selectedTime = picked);
-    }
-  }
-
-  Future<void> _selectAddressFromMap(bool isPickup) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MapAddressSelector(
-          initialPosition: isPickup ? _pickupLatLng : _deliveryLatLng,
-          title: isPickup ? 'Select Pickup Location' : 'Select Delivery Location',
-        ),
-      ),
-    );
-
-    if (result != null && result is Map<String, dynamic>) {
-      setState(() {
-        if (isPickup) {
-          _pickupAddressController.text = result['address'];
-          _pickupLatLng = result['latLng'];
-        } else {
-          _deliveryAddressController.text = result['address'];
-          _deliveryLatLng = result['latLng'];
-        }
-      });
-    }
-  }
-
-  String? _validatePhone(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Phone number is required';
-    }
-    final phoneRegex = RegExp(r'^\+?[\d\s-]{10,}$');
-    if (!phoneRegex.hasMatch(value)) {
-      return 'Enter a valid phone number';
-    }
-    return null;
-  }
-
-  void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a delivery date')),
-        );
-        return;
-      }
-
-      setState(() => _isLoading = true);
-
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      final deliveryData = {
-        'recipientName': _recipientNameController.text,
-        'recipientPhone': _recipientPhoneController.text,
-        'pickupAddress': _pickupAddressController.text,
-        'pickupLatLng': _pickupLatLng != null
-            ? {'lat': _pickupLatLng!.latitude, 'lng': _pickupLatLng!.longitude}
-            : null,
-        'deliveryAddress': _deliveryAddressController.text,
-        'deliveryLatLng': _deliveryLatLng != null
-            ? {'lat': _deliveryLatLng!.latitude, 'lng': _deliveryLatLng!.longitude}
-            : null,
-        'packageDescription': _packageDescriptionController.text,
-        'packageType': _selectedPackageType,
-        'priority': _selectedPriority,
-        'deliveryDate': _selectedDate.toString(),
-        'deliveryTime': _selectedTime?.format(context) ?? 'Not specified',
-        'notes': _notesController.text,
-      };
-
-      setState(() => _isLoading = false);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Delivery created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        Navigator.pop(context, deliveryData);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -349,6 +244,111 @@ class _CreateParcelPageState extends State<CreateParcelPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() => _selectedTime = picked);
+    }
+  }
+
+  Future<void> _selectAddressFromMap(bool isPickup) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapAddressSelector(
+          initialPosition: isPickup ? _pickupLatLng : _deliveryLatLng,
+          title: isPickup ? 'Select Pickup Location' : 'Select Delivery Location',
+        ),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        if (isPickup) {
+          _pickupAddressController.text = result['address'];
+          _pickupLatLng = result['latLng'];
+        } else {
+          _deliveryAddressController.text = result['address'];
+          _deliveryLatLng = result['latLng'];
+        }
+      });
+    }
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    final phoneRegex = RegExp(r'^\+?[\d\s-]{10,}$');
+    if (!phoneRegex.hasMatch(value)) {
+      return 'Enter a valid phone number';
+    }
+    return null;
+  }
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a delivery date')),
+        );
+        return;
+      }
+
+      setState(() => _isLoading = true);
+
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 2));
+
+      final deliveryData = {
+        'recipientName': _recipientNameController.text,
+        'recipientPhone': _recipientPhoneController.text,
+        'pickupAddress': _pickupAddressController.text,
+        'pickupLatLng': _pickupLatLng != null
+            ? {'lat': _pickupLatLng!.latitude, 'lng': _pickupLatLng!.longitude}
+            : null,
+        'deliveryAddress': _deliveryAddressController.text,
+        'deliveryLatLng': _deliveryLatLng != null
+            ? {'lat': _deliveryLatLng!.latitude, 'lng': _deliveryLatLng!.longitude}
+            : null,
+        'packageDescription': _packageDescriptionController.text,
+        'packageType': _selectedPackageType,
+        'priority': _selectedPriority,
+        'deliveryDate': _selectedDate.toString(),
+        'deliveryTime': _selectedTime?.format(context) ?? 'Not specified',
+        'notes': _notesController.text,
+      };
+
+      setState(() => _isLoading = false);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Delivery created successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pop(context, deliveryData);
+      }
+    }
   }
 
   Widget _buildSectionTitle(String title) {

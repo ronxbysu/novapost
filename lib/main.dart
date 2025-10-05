@@ -1,14 +1,12 @@
+import 'package:account_repository/account_repository.dart';
 import 'package:auth_repository/auth_repository.dart';
 import 'package:delivery_repository/delivery_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novapost/account/bloc/account_bloc.dart';
 import 'package:novapost/delivery/bloc/delivery_bloc.dart';
 import 'package:novapost/home/home_page.dart';
-import 'package:profile_repository/profile_repository.dart';
 import 'package:provider/provider.dart';
-
-import 'parcels/create_parcel_page.dart';
-import 'login_page.dart';
 
 void main() {
   final baseUrl = '';
@@ -16,6 +14,7 @@ void main() {
   final profileRepository =  ProfileRepositoryImpl(authRepository: authRepository, baseUrl: baseUrl);
   final deliveryRepository = DeliveryRepositoryImpl(authRepository: authRepository, baseUrl: baseUrl);
   final parcelRepository = ParcelRepositoryImpl(authRepository: authRepository, baseUrl: baseUrl);
+  final accountRepository = AccountRepositoryImpl(authRepository: authRepository, profileRepository: profileRepository, baseUrl: baseUrl);;
   runApp(
     MultiProvider(
       providers: [
@@ -36,9 +35,14 @@ void main() {
             RepositoryProvider<ParcelRepository>.value(
               value: parcelRepository,
             ),
+            RepositoryProvider<AccountRepository>.value(
+              value: accountRepository,
+            ),
           ],
-/*          child: MultiBlocProvider(
+          /*
+          child: MultiBlocProvider(
             providers: [
+              BlocProvider(create: (_) => AccountBloc(accountRepository)),
             ],
             child: NovaPostApp(),
           ),*/
