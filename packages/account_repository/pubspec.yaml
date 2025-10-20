@@ -3,8 +3,10 @@ description: account_repository
 version: 1.0.0
 publish_to: none
 
+resolution: workspace
+
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.9.2
 
 auth_repository: &auth_repository_version ^0.0.1
 

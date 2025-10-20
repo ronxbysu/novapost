@@ -1,7 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:profile_repository/src/model/profile_type.dart'
+    show ProfileType;
 
-enum ProfileType { customer, driver, assistant }
+part 'profile_model.g.dart';
 
+@JsonSerializable()
 class Profile extends Equatable {
   final String id;
   final String name;
@@ -45,32 +49,19 @@ class Profile extends Equatable {
     );
   }
 
-  factory Profile.fromJson(Map<String, dynamic> json) {
-    return Profile(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      phone: json['phone'] ?? '',
-      location: json['location'] ?? '',
-      avatarUrl: json['avatar_url'] ?? '',
-      role: json['role'] ?? 'User',
-      type: json['type'] ?? 'customer',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'location': location,
-      'avatar_url': avatarUrl,
-      'role': role,
-      'type': type,
-    };
-  }
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
+  Map<String, dynamic> toJson() => _$ProfileToJson(this);
 
   @override
-  List<Object?> get props => [id, name, email, phone, location, avatarUrl, role, type,];
+  List<Object?> get props => [
+    id,
+    name,
+    email,
+    phone,
+    location,
+    avatarUrl,
+    role,
+    type,
+  ];
 }

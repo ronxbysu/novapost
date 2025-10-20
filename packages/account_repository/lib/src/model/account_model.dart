@@ -37,5 +37,11 @@ class Account extends Equatable {
   }
 
   @override
-  List<Object?> get props => [accountId, email, profiles, activeProfileId, status,];
+  List<Object?> get props => [
+    accountId,
+    email,
+    profiles,
+    activeProfileId,
+    status,
+  ];
 }

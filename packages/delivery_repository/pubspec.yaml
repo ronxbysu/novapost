@@ -4,14 +4,19 @@ version: 1.0.0
 publish_to: none
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.9.2
 
 auth_repository: &auth_repository_version ^0.0.1
+
+json_annotation: &json_annotation_version ^4.9.0
+json_serializable: &json_serializable_version ^6.10.0
 
 uuid: &uuid ^4.5.1
 
 dependencies:
   auth_repository: *auth_repository_version
+  json_annotation: *json_annotation_version
+  json_serializable: *json_serializable_version
   parcel_repository:
     path: ../parcel_repository
 

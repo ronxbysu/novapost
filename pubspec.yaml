@@ -18,8 +18,44 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
+sdk: &sdk_version ^3.9.2
+
+auth_repository: &auth_repository_version ^0.0.1
+telegram_repository: &telegram_repository_version ^0.0.1
+
+json_annotation: &json_annotation_version ^4.9.0
+json_serializable: &json_serializable_version ^6.10.0
+
 environment:
-  sdk: ^3.9.2
+  sdk: *sdk_version
+
+workspace:
+  - packages/account_repository
+  - utility/partner_repository
+  - packages/profile_repository
+
+melos:
+#  useRootAsPackage: false
+  categories:
+    app:
+      - "."
+    packages:
+      - utility/partner_repository
+      - packages/account_repository
+      - packages/profile_repository
+      - '*'
+  command:
+    bootstrap:
+#      environment:
+#        sdk: *sdk_version
+#        flutter: ">=3.0.0 <4.0.0"
+      dependencies:
+        auth_repository: *auth_repository_version
+        telegram_repository: *telegram_repository_version
+        json_annotation: *json_annotation_version
+        json_serializable: *json_serializable_version
+
+
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -27,9 +63,6 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
-
-auth_repository: &auth_repository_version ^0.0.1
-telegram_repository: &telegram_repository_version ^0.0.1
 
 
 url_launcher: &url_launcher_version ^6.3.0
@@ -47,7 +80,7 @@ dependencies:
   account_repository:
     path: packages/account_repository
 
-
+  melos: ^7.1.1
   carousel_slider: ^5.1.1
   http: ^1.5.0
   flutter_bloc: ^9.0.0

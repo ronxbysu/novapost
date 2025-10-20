@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart' show JsonSerializable;
 import 'package:parcel_repository/parcel_repository.dart' show Parcel;
 
+part 'delivery_model.g.dart';
+
+@JsonSerializable()
 class Delivery extends Equatable {
   final String deliveryId;
   final String token;
@@ -17,25 +21,10 @@ class Delivery extends Equatable {
     this.status = 'created',
   });
 
-  factory Delivery.fromJson(Map<String, dynamic> json) {
-    return Delivery(
-      deliveryId: json['delivery_id'],
-      token: json['token'],
-      qrString: json['qr_string'],
-      parcels: json['parcels'],
-      status: json['status'] ?? 'created',
-    );
-  }
+  factory Delivery.fromJson(Map<String, dynamic> json) =>
+      _$DeliveryFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    return {
-      'delivery_id': deliveryId,
-      'token': token,
-      'qr_string': qrString,
-      'parcels': parcels,
-      'status': status,
-    };
-  }
+  Map<String, dynamic> toJson() => _$DeliveryToJson(this);
 
   @override
   List<Object?> get props => [deliveryId, token, qrString, status, parcels];
