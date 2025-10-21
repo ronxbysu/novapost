@@ -14,15 +14,11 @@
 
 import 'dart:typed_data';
 
-import 'package:auth/src/model/address_model.dart';
-import 'package:auth/src/model/company_model.dart' show Company;
-import 'package:auth/src/model/party_type_model.dart' show PartyType;
+import 'package:auth/auth.dart';
 import 'package:auth/src/model/role_converter.dart'
     show PartyTypeConverter, RoleConverter, Uint8ListConverter;
-import 'package:auth/src/model/role_model.dart' show Role;
-import 'package:auth/src/model/user_model.dart' show User;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:payment/payment.dart' show PaymentMethod;
+import 'package:payment/payment.dart';
 
 part 'company_user_model.freezed.dart';
 part 'company_user_model.g.dart';

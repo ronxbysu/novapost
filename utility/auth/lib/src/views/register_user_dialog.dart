@@ -14,13 +14,16 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
+import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:growerp_core/l10n/generated/core_localizations.dart';
-import 'package:growerp_models/growerp_models.dart';
+import 'package:locale/l10n/generated/core_localizations.dart' show CoreLocalizations;
+import 'package:locale/locale.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import '../../domains.dart';
+import 'package:widgets/widgets.dart';
+
+import '../blocs/auth/auth_bloc.dart';
 
 class RegisterUserDialog extends StatefulWidget {
   const RegisterUserDialog(this.admin, {super.key});

@@ -12,11 +12,10 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
+import 'package:auth/src/model/user_group_model.dart';
 import 'package:flutter/material.dart';
-import 'package:growerp_core/l10n/generated/core_localizations.dart';
-import 'package:growerp_models/growerp_models.dart';
-
-import '../../domains.dart';
+import 'package:locale/l10n/generated/core_localizations.dart' show CoreLocalizations;
+import 'package:widgets/widgets.dart';
 
 /// dialog returns true when company delete, false when not,
 /// null when cancelled

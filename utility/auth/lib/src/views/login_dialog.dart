@@ -12,9 +12,10 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-import 'package:auth/src/model/authenticate_model.dart' show Authenticate;
-import 'package:auth/src/model/company_model.dart' show Company;
-import 'package:auth/src/model/user_model.dart';
+import 'package:auth/auth.dart';
+import 'package:auth/src/blocs/data_fetch/data_fetch_bloc.dart';
+import 'package:auth/src/rest/rest_client.dart';
+import 'package:core/core.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:growerp_core/l10n/generated/core_localizations.dart';
-import 'package:payment/payment.dart' show Currency;
+import 'package:locale/l10n/generated/core_localizations.dart' show CoreLocalizations;
+import 'package:payment/payment.dart';
+import 'package:widgets/widgets.dart';
 
 import '../authenticate.dart'
     show

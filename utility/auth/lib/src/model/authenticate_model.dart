@@ -12,10 +12,7 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-import 'package:auth/src/model/company_model.dart' show Company;
-import 'package:auth/src/model/company_user_model.dart' show CompanyUser;
-import 'package:auth/src/model/stats_model.dart' show Stats;
-import 'package:auth/src/model/user_model.dart' show User;
+import 'package:auth/auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'authenticate_model.freezed.dart';

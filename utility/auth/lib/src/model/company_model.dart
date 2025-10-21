@@ -16,14 +16,12 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:auth/src/model/address_model.dart' show Address;
+import 'package:auth/auth.dart';
 import 'package:auth/src/model/role_converter.dart'
     show RoleConverter, Uint8ListConverter;
-import 'package:auth/src/model/user_model.dart' show User;
 import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:payment/payment.dart'
-    show Currency, PaymentMethod, CreditCardType;
+import 'package:payment/payment.dart';
 
 import 'role_model.dart' show Role;
 
@@ -61,4 +59,13 @@ abstract class Company with _$Company {
       'Curr: ${currency?.currencyId} '
       'imgSize: ${image?.length}'
       '#Empl: ${employees.length}';
+}
+
+@freezed
+abstract class Companies with _$Companies {
+  factory Companies({@Default([]) List<Company> companies}) = _Companies;
+  Companies._();
+
+  factory Companies.fromJson(Map<String, dynamic> json) =>
+      _$CompaniesFromJson(json);
 }

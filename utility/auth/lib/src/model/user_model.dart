@@ -12,19 +12,14 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:auth/src/model/address_model.dart';
+import 'package:auth/auth.dart';
 import 'package:auth/src/model/role_converter.dart'
     show RoleConverter, UserGroupConverter, Uint8ListConverter;
-import 'package:auth/src/model/role_model.dart' show Role;
-import 'package:auth/src/model/user_group_model.dart' show UserGroup;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:payment/payment.dart' show PaymentMethod;
+import 'package:payment/payment.dart';
 
-import 'company_model.dart' show Company;
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
@@ -93,4 +88,12 @@ abstract class User with _$User {
   }
 
   String getName() => '$lastName, $firstName';
+}
+
+@freezed
+abstract class Users with _$Users {
+  factory Users({@Default([]) List<User> users}) = _Users;
+  Users._();
+
+  factory Users.fromJson(Map<String, dynamic> json) => _$UsersFromJson(json);
 }

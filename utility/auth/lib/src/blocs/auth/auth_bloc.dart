@@ -15,20 +15,24 @@
 import 'dart:async';
 import 'dart:ui' show Locale;
 
+import 'package:auth/auth.dart';
 import 'package:auth/src/model/authenticate_model.dart' show Authenticate;
 import 'package:auth/src/model/company_model.dart' show Company;
 import 'package:auth/src/model/user_model.dart' show User;
+import 'package:auth/src/rest/rest_client.dart';
+import 'package:auth/src/utils/build_dio_client.dart';
+import 'package:auth/src/utils/get_dio_error.dart';
+import 'package:auth/src/utils/persist_functions.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:payment/payment.dart' show Currency;
+import 'package:payment/payment.dart' show Currency, CreditCardType;
 import 'package:stream_transform/stream_transform.dart';
 
-import '../../../services/build_dio_client.dart';
-import '../../../services/ws_client.dart';
-import '../../common/functions/functions.dart';
+import '../../../../services/ws_client.dart';
+import '../../../common/functions/functions.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -229,14 +233,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
     try {
-      String? creditCardType;
-      if (event.creditCardNumber != null) {
+      String? creditCardType = CreditCardType.visa.value;
+/*      if (event.creditCardNumber != null) {
         var cardType = detectCCType(event.creditCardNumber!);
         if (cardType.isNotEmpty) {
           var cardType1 = cardType[0].prettyType;
           creditCardType = cardType1.toString().split('.').last.toString();
         }
-      }
+      }*/
 
       emit(state.copyWith(status: AuthStatus.loading));
       PersistFunctions.removeAuthenticate();

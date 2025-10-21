@@ -31,7 +31,7 @@ environment:
 
 workspace:
   - packages/account_repository
-  - utility/partner_repository
+#  - utility/partner_repository
   - packages/profile_repository
 
 melos:

@@ -15,7 +15,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:growerp_core/l10n/generated/core_localizations.dart';
+import 'package:locale/l10n/generated/core_localizations.dart' show CoreLocalizations;
+import 'package:widgets/widgets.dart';
 
 import '../authenticate.dart'
     show AuthBloc, AuthResetPassword, AuthState, AuthStatus;
