@@ -69,3 +69,13 @@ abstract class Companies with _$Companies {
   factory Companies.fromJson(Map<String, dynamic> json) =>
       _$CompaniesFromJson(json);
 }
+
+@freezed
+abstract class CompaniesUsers with _$CompaniesUsers {
+  factory CompaniesUsers({@Default([]) List<CompanyUser> companiesUsers}) =
+  _CompaniesUsers;
+  CompaniesUsers._();
+
+  factory CompaniesUsers.fromJson(Map<String, dynamic> json) =>
+      _$CompaniesUsersFromJson(json);
+}

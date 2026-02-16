@@ -3,13 +3,20 @@ description: location_repository
 version: 0.0.1
 publish_to: 'none'
 
+auth_repository: &auth_repository_version ^0.0.1
+
+json_annotation: &json_annotation_version ^4.9.0
+json_serializable: &json_serializable_version ^6.10.0
+
 environment:
   sdk: ^3.9.2
 
 dependencies:
+  auth_repository: *auth_repository_version
+  json_annotation: *json_annotation_version
+  json_serializable: *json_serializable_version
   equatable: ^2.0.5
   http: ^1.2.0
-  auth_repository: *auth_repository_version
 
 dev_dependencies:
   flutter_test:

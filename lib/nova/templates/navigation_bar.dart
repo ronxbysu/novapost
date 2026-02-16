@@ -1,0 +1,85 @@
+import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+
+
+class NavigationMenu extends StatelessWidget {
+  const NavigationMenu({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ScreenTypeLayout.builder(
+      mobile: (context) => const NavigationMenuMobile(),
+      tablet: (context) => const NavigationMenuTabletDesktop(20),
+      desktop: (context) => const NavigationMenuTabletDesktop(50),
+    );
+  }
+}
+
+class NavigationMenuMobile extends StatelessWidget {
+  const NavigationMenuMobile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 80,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+          const NavBarLogo(),
+        ],
+      ),
+    );
+  }
+}
+
+class NavigationMenuTabletDesktop extends StatelessWidget {
+  final double spacing;
+  const NavigationMenuTabletDesktop(this.spacing, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          const NavBarLogo(),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+/*              const NavBarItem('Home', homeRoute),
+              SizedBox(width: spacing),
+              const NavBarItem('About', aboutRoute),
+              SizedBox(width: spacing),
+              const NavBarItem('Moqui', moquiRoute),
+              SizedBox(width: spacing),
+              const NavBarItem('OFBiz', ofbizRoute),*/
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NavBarLogo extends StatelessWidget {
+  const NavBarLogo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      mouseCursor: WidgetStateMouseCursor.clickable,
+      onTap: () {
+        // Navigator.pushNamed(context, homeRoute);
+      },
+      child: SizedBox(child: Image.asset('assets/growerp.png')),
+    );
+  }
+}

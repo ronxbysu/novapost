@@ -12,15 +12,16 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-import 'package:growerp_models/growerp_models.dart';
+import 'package:locale_chat/locale.dart';
+import 'package:widgets/widgets.dart';
+import 'package:auth/auth.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:growerp_core/growerp_core.dart';
-import 'package:growerp_chat/l10n/generated/chat_localizations.dart';
 
 import '../blocs/blocs.dart';
+import '../models/models.dart';
 
 class ChatRoomDialog extends StatefulWidget {
   final ChatRoom chatRoom;
@@ -47,7 +48,7 @@ class ChatRoomDialogState extends State<ChatRoomDialog> {
     _userBloc = context.read<DataFetchBloc<Users>>()
       ..add(
         GetDataEvent(
-          () => context.read<RestClient>().getUser(
+          () => context.read<AuthRestClient>().getUser(
             limit: 3,
             isForDropDown: true,
             loginOnly: true,
@@ -145,7 +146,7 @@ class ChatRoomDialogState extends State<ChatRoomDialog> {
               asyncItems: (String filter) {
                 _userBloc.add(
                   GetDataEvent(
-                    () => context.read<RestClient>().getUser(
+                    () => context.read<AuthRestClient>().getUser(
                       searchString: filter,
                       limit: 3,
                       isForDropDown: true,

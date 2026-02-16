@@ -1,28 +1,17 @@
-/*
- * This GrowERP software is in the public domain under CC0 1.0 Universal plus a
- * Grant of Patent License.
- *
- * To the extent possible under law, the author(s) have dedicated all
- * copyright and related and neighboring rights to this software to the
- * public domain worldwide. This software is distributed without any
- * warranty.
- * 
- * You should have received a copy of the CC0 Public Domain Dedication
- * along with this software (see the LICENSE.md file). If not, see
- * <http://creativecommons.org/publicdomain/zero/1.0/>.
- */
-
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:auth/auth.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:chat/src/ws/ws_client.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:widgets/widgets.dart';
 
 import '../models/chat_message_model.dart' show ChatMessage, ChatMessages;
-import '../util/get_dio_error.dart';
+import '../rest/chat_rest_client.dart' show ChatRestClient;
 import 'chat_room_bloc.dart';
 
 part 'chat_message_event.dart';
@@ -51,7 +40,7 @@ class ChatMessageBloc extends Bloc<ChatMessageEvent, ChatMessageState> {
     on<ChatMessageSendWs>(_onChatMessageSendWs);
   }
 
-  final RestClient restClient;
+  final ChatRestClient restClient;
   final WsClient chatClient;
   final AuthBloc authBloc;
   final ChatRoomBloc chatRoomBloc;

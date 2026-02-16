@@ -14,7 +14,7 @@
 
 import 'package:auth/auth.dart';
 import 'package:auth/src/blocs/data_fetch/data_fetch_bloc.dart';
-import 'package:auth/src/rest/rest_client.dart';
+import 'package:auth/src/rest/auth_rest_client.dart';
 import 'package:core/core.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
@@ -26,15 +26,6 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:locale/l10n/generated/core_localizations.dart' show CoreLocalizations;
 import 'package:payment/payment.dart';
 import 'package:widgets/widgets.dart';
-
-import '../authenticate.dart'
-    show
-        AuthBloc,
-        AuthStatus,
-        AuthState,
-        AuthChangePassword,
-        AuthLogin,
-        SendResetPasswordDialog;
 
 class LoginDialog extends StatefulWidget {
   const LoginDialog({super.key});
@@ -80,7 +71,7 @@ class LoginDialogState extends State<LoginDialog> {
     productBloc = context.read<DataFetchBloc<Products>>()
       ..add(
         GetDataEvent(
-          () => context.read<RestClient>().getProduct(ownerPartyId: 'GROWERP'),
+          () => context.read<AuthRestClient>().getProduct(ownerPartyId: 'GROWERP'),
         ),
       );
   }

@@ -11,10 +11,9 @@
  * along with this software (see the LICENSE.md file). If not, see
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
+import 'package:auth/auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../auth/lib/src/model/role_model.dart' show Role;
-import '../../../../auth/lib/src/model/user_group_model.dart' show UserGroup;
 
 class DateTimeConverter implements JsonConverter<DateTime?, String?> {
   const DateTimeConverter();

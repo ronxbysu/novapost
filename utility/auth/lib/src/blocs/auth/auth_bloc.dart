@@ -16,10 +16,6 @@ import 'dart:async';
 import 'dart:ui' show Locale;
 
 import 'package:auth/auth.dart';
-import 'package:auth/src/model/authenticate_model.dart' show Authenticate;
-import 'package:auth/src/model/company_model.dart' show Company;
-import 'package:auth/src/model/user_model.dart' show User;
-import 'package:auth/src/rest/rest_client.dart';
 import 'package:auth/src/utils/build_dio_client.dart';
 import 'package:auth/src/utils/get_dio_error.dart';
 import 'package:auth/src/utils/persist_functions.dart';
@@ -30,9 +26,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:payment/payment.dart' show Currency, CreditCardType;
 import 'package:stream_transform/stream_transform.dart';
-
-import '../../../../services/ws_client.dart';
-import '../../../common/functions/functions.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -50,8 +43,8 @@ EventTransformer<E> authDroppable<E>(Duration duration) {
 ///
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
-    this.chat,
-    this.notification,
+    // this.chat,
+    // this.notification,
     this.restClient,
     this.classificationId,
     this.company,
@@ -74,9 +67,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthChangePassword>(_onAuthChangePassword);
   }
 
-  final RestClient restClient;
-  final WsClient chat;
-  final WsClient notification;
+  final AuthRestClient restClient;
+  // final WsClient chat;
+  // final WsClient notification;
   final String classificationId;
   final Company? company;
 
@@ -133,9 +126,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // Authenticated
         await PersistFunctions.persistAuthenticate(authResult);
         // chat
-        chat.connect(authResult.apiKey!, authResult.user!.userId!);
+        // chat.connect(authResult.apiKey!, authResult.user!.userId!);
         // notification
-        notification.connect(authResult.apiKey!, authResult.user!.userId!);
+        // notification.connect(authResult.apiKey!, authResult.user!.userId!);
         return emit(
           state.copyWith(
             status: AuthStatus.authenticated,
@@ -209,8 +202,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(state.copyWith(status: AuthStatus.loading));
       await restClient.logout();
-      notification.close();
-      chat.close();
+      // notification.close();
+      // chat.close();
       emit(
         state.copyWith(
           status: AuthStatus.unAuthenticated,
@@ -247,7 +240,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // Use extended timeout for demo data creation as it involves heavy database operations
       final clientToUse = event.demoData == true
-          ? RestClient(
+          ? AuthRestClient(
               await buildDioClient(timeout: const Duration(seconds: 900)),
             ) // 15 minutes for demo data
           : restClient;
@@ -286,14 +279,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
         PersistFunctions.persistAuthenticate(state.authenticate!);
         if (state.authenticate!.user!.userId != null) {
-          chat.connect(
+/*          chat.connect(
             state.authenticate!.apiKey!,
             state.authenticate!.user!.userId!,
           );
           notification.connect(
             state.authenticate!.apiKey!,
             state.authenticate!.user!.userId!,
-          );
+          );*/
         }
 
         PersistFunctions.persistKeyValue('apiKey', authenticate.apiKey ?? '');
@@ -358,14 +351,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         classificationId: classificationId,
       );
       if (state.authenticate!.user!.userId != null) {
-        chat.connect(
+/*        chat.connect(
           state.authenticate!.apiKey!,
           state.authenticate!.user!.userId!,
         );
         notification.connect(
           state.authenticate!.apiKey!,
           state.authenticate!.user!.userId!,
-        );
+        );*/
       }
 
       emit(

@@ -1,0 +1,70 @@
+/*
+ * This GrowERP software is in the public domain under CC0 1.0 Universal plus a
+ * Grant of Patent License.
+ * 
+ * To the extent possible under law, the author(s) have dedicated all
+ * copyright and related and neighboring rights to this software to the
+ * public domain worldwide. This software is distributed without any
+ * warranty.
+ * 
+ * You should have received a copy of the CC0 Public Domain Dedication
+ * along with this software (see the LICENSE.md file). If not, see
+ * <http://creativecommons.org/publicdomain/zero/1.0/>.
+ */
+
+import 'package:core/core.dart';
+import 'package:decimal/decimal.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../json_converters.dart';
+
+part 'asset_model.freezed.dart';
+part 'asset_model.g.dart';
+
+@freezed
+abstract class Asset with _$Asset {
+  factory Asset({
+    @Default("") String assetId,
+    @Default("") String pseudoId,
+    String? assetClassId, // room, table etc
+    String? assetName, // include room number/name
+    String? statusId,
+    Decimal? acquireCost,
+    Decimal? quantityOnHand,
+    Decimal? availableToPromise,
+    String? parentAssetId,
+    @DateTimeConverter() DateTime? receivedDate,
+    @DateTimeConverter() DateTime? expectedEndOfLifeDate,
+    Product? product,
+    Location? location,
+    String? acquireShipmentId,
+  }) = _Asset;
+  Asset._();
+
+  factory Asset.fromJson(Map<String, dynamic> json) =>
+      _$AssetFromJson(json['asset'] ?? json);
+
+  @override
+  String toString() => 'Asset name: $assetName[$assetId] '
+      'Product: ${product?.productName}[${product?.productId}] '
+      'QOH: $quantityOnHand Status: $statusId';
+}
+
+List<String> assetClassIds = [
+  'Hotel Room',
+  'Restaurant Table',
+  'Restaurant Table Area'
+];
+
+List<String> assetStatusValues = ['Available', 'Deactivated', 'In Use'];
+
+
+@freezed
+abstract class Assets with _$Assets {
+  factory Assets({@Default([]) List<Asset> assets}) = _Assets;
+  Assets._();
+
+  factory Assets.fromJson(Map<String, dynamic> json) => _$AssetsFromJson(json);
+}
+
+

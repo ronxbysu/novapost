@@ -12,7 +12,7 @@
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-import 'package:chat/src/models/user_model.dart' show User;
+import 'package:auth/auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'models.dart';
